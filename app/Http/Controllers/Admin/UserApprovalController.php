@@ -73,15 +73,6 @@ class UserApprovalController extends Controller
         $user->delete();
         return back()->with('success', 'User deleted successfully.');
     }
-    //temporary
-    public function makeAdmin(User $user)
-{
-    $user->role = 'Admin';
-    $user->is_approved = true; // auto-approve when making admin
-    $user->save();
-
-    return redirect()->back()->with('success', $user->name . ' is now an Admin!');
-}
 
 
 }
