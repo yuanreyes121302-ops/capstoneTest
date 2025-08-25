@@ -1,14 +1,22 @@
 #!/bin/bash
 set -e
 
-# Wait for database
-until mysql -h"$DB_HOST" -u"$DB_USERNAME" -p"$DB_PASSWORD" -e "select 1" &> /dev/null; do
-  echo "⏳ Waiting for database..."
+echo "⏳ Waiting for Postgres database at ${DB_HOST}:${DB_PORT}..."
+
+# Wait until Postgres is ready
+until pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USERNAME"; do
   sleep 3
 done
+
+echo "✅ Database is ready!"
 
 # Run migrations
 php artisan migrate --force || true
 
-# Start Apache
+# Cache Laravel config/routes/views
+php artisan config:cache || true
+php artisan route:cache || true
+php artisan view:cache || true
+
+echo "🚀 Starting Apache..."
 exec apache2-foreground

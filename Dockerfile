@@ -1,11 +1,9 @@
-# Use the official PHP image with Apache
 FROM php:8.2-apache
 
-# Install dependencies for Laravel
+# Install dependencies including PostgreSQL client
 RUN apt-get update && apt-get install -y \
-    libpng-dev libjpeg-dev libfreetype6-dev zip git unzip mariadb-client \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql
+    git unzip libpng-dev libjpeg-dev libfreetype6-dev zip postgresql-client \
+    && docker-php-ext-install pdo pdo_pgsql gd
 
 # Enable Apache rewrite module
 RUN a2enmod rewrite
@@ -13,22 +11,26 @@ RUN a2enmod rewrite
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy Laravel files into container
-COPY . .
-
-# Install Composer
+# Copy Composer binary
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Copy Laravel app
+COPY . .
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Fix permissions for Laravel
+# Fix permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Expose port 80
+# Copy entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Expose Apache port
 EXPOSE 80
 
-# Start Apache
+# Use entrypoint
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
