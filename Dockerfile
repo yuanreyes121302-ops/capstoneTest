@@ -1,33 +1,34 @@
-# Use PHP with Apache
+# Use the official PHP image with Apache
 FROM php:8.2-apache
 
-# Install system dependencies
+# Install dependencies for Laravel
 RUN apt-get update && apt-get install -y \
-    unzip \
-    git \
-    libpq-dev \
-    && docker-php-ext-install pdo pdo_mysql pdo_pgsql
+    libpng-dev libjpeg-dev libfreetype6-dev zip git unzip mariadb-client \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd pdo pdo_mysql
 
-# Enable Apache mod_rewrite
+# Enable Apache rewrite module
 RUN a2enmod rewrite
-
-# Install Composer
-COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy app files
+# Copy Laravel files into container
 COPY . .
 
-# Install dependencies
-RUN composer install --optimize-autoloader --no-dev
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Set permissions
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader
+
+# Fix permissions for Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Expose port 80 for Render
+# Expose port 80
 EXPOSE 80
 
 # Start Apache
-CMD ["apache2-foreground"]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
