@@ -1,27 +1,34 @@
+# Base image
 FROM php:8.2-apache
 
-# Install system dependencies for Postgres and GD
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git unzip zip libpng-dev libjpeg-dev libfreetype6-dev libpq-dev postgresql-client \
+    nodejs npm \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd pdo pdo_pgsql
 
 # Enable Apache rewrite
 RUN a2enmod rewrite
 
-# Tell Apache the document root is /var/www/html/public
+# Set Laravel public folder as web root
 RUN sed -i 's#/var/www/html#/var/www/html/public#g' /etc/apache2/sites-available/000-default.conf
 
+# Set working directory
 WORKDIR /var/www/html
 
 # Copy Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy app files
+# Copy Laravel app
 COPY . .
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
+
+# Install Node dependencies and build assets
+RUN npm install
+RUN npm run build   # for Vite, use npm run prod if using Mix
 
 # Fix permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
@@ -30,6 +37,7 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+# Expose port 80
 EXPOSE 80
 
 ENTRYPOINT ["/entrypoint.sh"]
