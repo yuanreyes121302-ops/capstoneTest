@@ -17,18 +17,18 @@ RUN sed -i 's#/var/www/html#/var/www/html/public#g' /etc/apache2/sites-available
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy Composer
+# Copy Composer binary
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy Laravel app
+# Copy Laravel project files
 COPY . .
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Install Node dependencies and build assets
+# Install Node dependencies and build assets using Laravel Mix
 RUN npm install
-RUN npm run build   # for Vite, use npm run prod if using Mix
+RUN npm run prod   # Use Laravel Mix production build
 
 # Fix permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
@@ -37,7 +37,8 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Expose port 80
+# Expose Apache port
 EXPOSE 80
 
+# Run entrypoint
 ENTRYPOINT ["/entrypoint.sh"]
