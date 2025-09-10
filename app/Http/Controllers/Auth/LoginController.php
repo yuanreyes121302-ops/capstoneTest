@@ -53,14 +53,15 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
     
-    protected function authenticated(Request $request, $user)
+    protected function authenticated(\Illuminate\Http\Request $request, $user)
     {
-        if (!$user->is_approved) {
+        if (!$user->is_approved && $user->role !== 'tenant' && $user->role !== 'admin') {
             Auth::logout();
             return redirect('/login')->withErrors([
                 'email' => 'Your account is awaiting admin approval.',
             ]);
         }
+        return redirect()->intended($this->redirectPath());
     }
 
 }

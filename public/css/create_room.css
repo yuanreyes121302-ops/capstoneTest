@@ -1,0 +1,88 @@
+/* Form container */
+.container-rooms-create {
+    max-width: 700px;
+    margin: 40px auto;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Form title */
+.container h4 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+/* Label styling */
+form label {
+    display: block;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 6px;
+}
+
+/* Input fields */
+form input[type="text"],
+form input[type="number"],
+form input[type="file"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.3s ease;
+}
+
+form input[type="text"]:focus,
+form input[type="number"]:focus,
+form input[type="file"]:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.25);
+}
+
+/* File upload input */
+input[type="file"] {
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+/* Submit button */
+.btn-success {
+    padding: 10px 22px;
+    font-size: 1rem;
+    border-radius: 6px;
+    background-color: #28a745;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    color: white;
+}
+
+/* Alert message */
+.alert.alert-info {
+    background-color: #e7f3ff;
+    color: #0c5460;
+    padding: 12px 18px;
+    border: 1px solid #bee5eb;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+/* Responsive tweaks */
+@media (max-width: 576px) {
+    .container {
+        padding: 20px;
+    }
+
+    .btn-success {
+        width: 100%;
+    }
+}

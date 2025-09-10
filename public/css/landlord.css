@@ -1,0 +1,249 @@
+/* Base Container */
+.navbarcontainer {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: auto;
+    padding: 20px 50px 50px 50px; /* Reduced padding-top */
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+}
+
+
+/* Headings */
+h2 {
+    font-size: 2rem;
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+}
+
+/* Form Labels */
+.form-label {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+/* Form Inputs */
+.form-control {
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    padding: 12px 16px;
+    font-size: 0.92rem;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 0.2rem rgba(74,144,226,0.25), 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* File Input Styling */
+input[type="file"] {
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    padding: 12px 16px;
+    font-size: 0.92rem;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+input[type="file"]:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 0.2rem rgba(74,144,226,0.25), 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Buttons */
+.btn {
+    border-radius: 25px;
+    padding: 12px 24px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.btn-outline-primary {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: #fff;
+    border: none;
+}
+
+.btn-outline-primary:hover {
+    background: linear-gradient(135deg, #e083f0 0%, #e54c61 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+/* Alerts */
+.alert {
+    border-radius: 10px;
+    font-size: 0.9rem;
+    padding: 12px 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Card Styling */
+.card {
+    border: none;
+    border-radius: 15px;
+    background-color: #ffffff;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+/* Profile Image Styling */
+img.rounded-circle {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-bottom: 10px;
+}
+
+/* Small text (errors, notes) */
+.text-danger {
+    font-size: 0.85rem;
+}
+
+/* Spacing for rows */
+.row.mb-3 {
+    margin-bottom: 1.5rem;
+}
+
+/* Profile Layout Improvements */
+.navbarcontainer {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: auto;
+    padding: 20px 50px 50px 50px;
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+}
+
+/* Responsive Tweaks */
+@media (max-width: 992px) {
+    .row > div {
+        margin-bottom: 20px;
+    }
+
+    .navbarcontainer {
+        padding: 20px 20px 50px 20px;
+    }
+
+    /* Profile image layout adjustments */
+    .d-flex.align-items-center {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .rounded-circle.me-3 {
+        margin-bottom: 15px;
+        margin-right: 0 !important;
+    }
+
+    .form-control {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbarcontainer {
+        padding: 15px 15px 30px 15px;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .row.mb-3 {
+        margin-bottom: 1rem;
+    }
+
+    .form-control {
+        padding: 10px 14px;
+        font-size: 0.9rem;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+
+    /* Profile image responsive */
+    .rounded-circle {
+        width: 100px !important;
+        height: 100px !important;
+    }
+
+    .d-flex.align-items-center {
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbarcontainer {
+        padding: 10px 10px 20px 10px;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .card {
+        padding: 15px;
+        margin: 10px 0;
+    }
+
+    .form-control {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    /* Stack form rows vertically on very small screens */
+    .row.mb-3 {
+        flex-direction: column;
+    }
+
+    .row.mb-3 > div {
+        margin-bottom: 15px;
+    }
+
+    /* Profile image adjustments */
+    .rounded-circle {
+        width: 80px !important;
+        height: 80px !important;
+    }
+
+    .form-control {
+        max-width: 250px;
+    }
+}

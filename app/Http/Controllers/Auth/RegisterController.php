@@ -51,16 +51,22 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        return Validator::make($data, [
+        $rules = [
             'user_id' => ['required', 'string', 'max:255', 'unique:users'],
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'gender' => ['required', 'in:male,female'],
-            'dob' => ['required', 'date'],
             'role' => ['required', 'in:tenant,landlord'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
+        ];
+
+        // Add contact_number validation for landlords
+        if (isset($data['role']) && $data['role'] === 'landlord') {
+            $rules['contact_number'] = ['required', 'string', 'max:20'];
+        }
+
+        return Validator::make($data, $rules);
     }
 
     /**
@@ -71,16 +77,35 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $userData = [
             'user_id' => $data['user_id'],
             'first_name' => $data['first_name'],
             'last_name' => $data['last_name'],
             'email' => $data['email'],
             'gender' => $data['gender'],
-            'dob' => $data['dob'],
             'role' => $data['role'],
             'password' => Hash::make($data['password']),
-        ]);
+            'is_approved' => $data['role'] === 'tenant',
+        ];
+
+        // Add contact_number for landlords
+        if ($data['role'] === 'landlord' && isset($data['contact_number'])) {
+            $userData['contact_number'] = $data['contact_number'];
+        }
+
+        return User::create($userData);
+    }
+
+    protected function registered(Request $request, $user)
+    {
+        if ($user->role === 'tenant') {
+            return redirect()->route('tenant.properties.index');
+        } elseif ($user->role === 'landlord') {
+            return redirect()->route('landlord.properties.index');
+        } elseif ($user->role === 'admin') {
+            return redirect()->route('admin.users.all');
+        }
+        return redirect('/');
     }
 
     public function register(Request $request)
@@ -90,6 +115,10 @@ class RegisterController extends Controller
         event(new Registered($user = $this->create($request->all())));
 
         // Don't log the user in automatically
-        return redirect('/login')->with('success', 'Registration successful. Please wait for admin approval.');
+        $message = $request->role === 'tenant'
+            ? 'Registration successful. You can now log in.'
+            : 'Registration successful. Please wait for admin approval.';
+
+        return redirect('/login')->with('success', $message);
     }
 }

@@ -1,0 +1,30 @@
+/* Wrap for card rows */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* Each property card container */
+.col-md-12.mb-10 {
+  flex: 1 1 calc(33.333% - 20px); /* 3 cards per row with 20px gap */
+  max-width: calc(33.333% - 20px);
+}
+
+/* Ensure consistent card height and layout */
+.card.h-100.shadow-sm {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Responsive tweaks for tablets */
+@media (max-width: 992px) {
+  .col-md-12.mb-10 {
+    flex: 1 1 calc(50% - 20px); /* 2 cards per row */
+    max-width: calc(50% - 20px);
+  }
+}
+
+/* Responsive tweaks for mobile *

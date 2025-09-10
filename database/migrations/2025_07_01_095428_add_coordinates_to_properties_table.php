@@ -14,8 +14,8 @@ class AddCoordinatesToPropertiesTable extends Migration
     public function up()
 {
     Schema::table('properties', function (Blueprint $table) {
-        $table->decimal('latitude', 10, 6)->nullable();
-        $table->decimal('longitude', 10, 6)->nullable();
+        $table->decimal('latitude', 18, 15)->nullable();
+        $table->decimal('longitude', 18, 15)->nullable();
     });
 }
 

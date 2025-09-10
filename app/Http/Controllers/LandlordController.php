@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Auth;
 
 class LandlordController extends Controller
 {
+
+
+    
     public function showProfile()
     {
         $user = Auth::user();
@@ -22,11 +25,11 @@ class LandlordController extends Controller
             'last_name' => 'required|string|max:50',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'gender' => 'required|in:male,female,other',
-            'dob' => 'required|date',
+            'contact_number' => 'required|string|max:20',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $user->update($request->only('first_name', 'last_name', 'email', 'gender', 'dob'));
+        $user->update($request->only('first_name', 'last_name', 'email', 'gender', 'contact_number'));
 
         if ($request->hasFile('profile_image')) {
             // Delete old image if exists

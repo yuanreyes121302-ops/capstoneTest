@@ -1,6 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/index_property.css') }}">
+    @endpush
+@push('styles')
+
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>My Properties</h2>

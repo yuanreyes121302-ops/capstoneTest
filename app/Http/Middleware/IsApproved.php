@@ -10,7 +10,8 @@ class IsApproved
 {
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && !Auth::user()->is_approved) {
+        $user = Auth::user();
+        if (Auth::check() && !$user->is_approved && $user->role !== 'tenant' && $user->role !== 'admin') {
             return redirect()->route('not.approved')->with('error', 'Your account is pending approval.');
         }
 

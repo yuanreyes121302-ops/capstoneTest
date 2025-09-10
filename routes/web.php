@@ -9,6 +9,10 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\LandlordUpdatedProfileController;
+
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +25,9 @@ use App\Http\Controllers\ReviewController;
 |
 */
 
+Route::post('/profile/update-picture', [LandlordUpdatedProfileController::class, 'updateProfilePicture'])
+     ->name('profile.updatePicture');
+
 Route::get('/', function () {
     return view('index');
 });
@@ -29,7 +36,24 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['auth', 'is_approved'])->group(function () {
+    Route::get('/dashboard', function () {
+        if (auth()->user()->role === 'admin') {
+            return redirect('/admin/users/all');
+        } elseif (auth()->user()->role === 'landlord') {
+            return redirect('/landlord/profile');
+        } elseif (auth()->user()->role === 'tenant') {
+            return redirect('/tenant/profile');
+        }
+        return redirect('/');
+    })->name('dashboard');
+});
+
+Route::get('/not-approved', function () {
+    return view('auth.not-approved');
+})->name('not.approved');
+
+Route::middleware(['auth', 'is_approved', 'admin'])->group(function () {
     Route::get('/admin/users', [UserApprovalController::class, 'index'])->name('admin.users');
     Route::post('/admin/users/{user}/approve', [UserApprovalController::class, 'approve'])->name('admin.users.approve');
     Route::post('/admin/users/{user}/deny', [UserApprovalController::class, 'deny'])->name('admin.users.deny');
@@ -66,7 +90,7 @@ Route::resource('properties', PropertyController::class);
 Route::delete('/property-images/{image}', [PropertyController::class, 'deleteImage'])->name('property-images.destroy');
 
 
-Route::middleware(['auth', 'role:tenant'])->group(function () {
+Route::middleware(['auth', 'is_approved', 'role:tenant'])->group(function () {
     Route::get('/tenant/profile', [TenantController::class, 'showProfile'])->name('tenant.profile');
     Route::post('/tenant/profile', [TenantController::class, 'updateProfile'])->name('tenant.profile.update');
     Route::get('/properties', [PropertyController::class, 'indexForTenant'])->name('tenant.properties.index');
@@ -74,10 +98,24 @@ Route::middleware(['auth', 'role:tenant'])->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/messages', [MessageController::class, 'inbox'])->name('messages.inbox');
-    Route::get('/messages/{user}', [MessageController::class, 'showConversation'])->name('messages.show');
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/fetch-conversations', [MessageController::class, 'fetchConversations'])->name('messages.fetchConversations');
+    Route::get('/messages/fetch-messages/{userId}', [MessageController::class, 'fetchMessages'])->name('messages.fetchMessages');
+    Route::get('/messages/{userId}', [MessageController::class, 'showConversation'])->name('messages.show');
     Route::post('/messages/send', [MessageController::class, 'send'])->name('messages.send');
-    Route::get('/inbox', [MessageController::class, 'inbox'])->name('messages.inbox');
+    Route::post('/messages/mark-read/{userId}', [MessageController::class, 'markAsRead'])->name('messages.markAsRead');
+    Route::get('/inbox', [MessageController::class, 'index'])->name('messages.inbox');
+
+    // New API endpoints
+    Route::get('/conversations', [MessageController::class, 'conversations']);
+    Route::get('/conversations/{counterpartId}/messages', [MessageController::class, 'thread']);
+    Route::post('/conversations/{counterpartId}/read', [MessageController::class, 'markAsRead']);
+    Route::get('/api/user/{userId}', [MessageController::class, 'getUserData']);
+
+    // CSRF token endpoint for AJAX requests
+    Route::get('/csrf-token', function () {
+        return response()->json(['csrf_token' => csrf_token()]);
+    });
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -98,23 +136,6 @@ Route::get('/reviews/{review}/edit', [ReviewController::class, 'edit'])->name('r
 Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
 Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 
-function simulateBestFirstSearch($start, $end)
-{
-    // Simulated small graph with artificial waypoints
-    $nodes = [
-        [14.5995, 120.9842], // start
-        [14.6000, 120.9850],
-        [14.6010, 120.9860],
-        [14.6020, 120.9865],
-        [$end[0], $end[1]],  // end
-    ];
+Route::get('/tenant/properties/{id}/map', [App\Http\Controllers\PropertyController::class, 'viewMap'])
+    ->name('tenant.properties.map');
 
-    // Sort by straight-line (Euclidean) distance to end
-    usort($nodes, function ($a, $b) use ($end) {
-        $d1 = sqrt(pow($end[0] - $a[0], 2) + pow($end[1] - $a[1], 2));
-        $d2 = sqrt(pow($end[0] - $b[0], 2) + pow($end[1] - $b[1], 2));
-        return $d1 <=> $d2;
-    });
-
-    return $nodes; // simple path
-}

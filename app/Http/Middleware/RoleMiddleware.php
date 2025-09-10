@@ -16,7 +16,7 @@ class RoleMiddleware
 
         $user = Auth::user();
 
-        if (!in_array($user->role, $roles)) {
+        if (!in_array($user->role, $roles) || (!$user->is_approved && $user->role !== 'tenant' && $user->role !== 'admin')) {
             abort(403, 'Unauthorized access.');
         }
 

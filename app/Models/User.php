@@ -27,6 +27,10 @@ class User extends Authenticatable
         'role',
         'password',
         'profile_image',
+        'is_approved',
+        'contact_number',
+        'is_online',
+        'last_seen',
     ];
 
     /**
@@ -46,6 +50,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'is_approved' => 'boolean',
     ];
 
     public function properties()
@@ -66,6 +71,74 @@ class User extends Authenticatable
     public function reviews()
     {
         return $this->hasMany(Review::class, 'tenant_id');
+    }
+
+    public function getNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
+
+    /**
+     * Set user as online
+     */
+    public function setOnline()
+    {
+        try {
+            // Only update if the model exists and has an ID
+            if ($this->exists && $this->id) {
+                $this->update([
+                    'is_online' => true,
+                    'last_seen' => now(),
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Log the error but don't throw it to avoid breaking the request
+            \Log::error('Failed to set user online', [
+                'user_id' => $this->id ?? 'unknown',
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Set user as offline
+     */
+    public function setOffline()
+    {
+        $this->update([
+            'is_online' => false,
+            'last_seen' => now(),
+        ]);
+    }
+
+    /**
+     * Check if user is currently online
+     */
+    public function isCurrentlyOnline()
+    {
+        try {
+            if ($this->is_online) {
+                return true;
+            }
+
+            // Consider user online if last seen within last 5 minutes
+            return $this->last_seen && $this->last_seen->diffInMinutes(now()) <= 5;
+        } catch (\Exception $e) {
+            // Log the error but return false as fallback
+            \Log::error('Error checking if user is online', [
+                'user_id' => $this->id ?? 'unknown',
+                'error' => $e->getMessage()
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * Get online status text
+     */
+    public function getOnlineStatus()
+    {
+        return $this->isCurrentlyOnline() ? 'online' : 'offline';
     }
 
 }

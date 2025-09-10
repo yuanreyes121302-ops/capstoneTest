@@ -6,6 +6,7 @@ use App\Models\Property;
 use Illuminate\Http\Request;
 use App\Models\PropertyImage;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
 
 class PropertyController extends Controller
 {
@@ -20,12 +21,14 @@ class PropertyController extends Controller
         return view('landlord.properties.create');
     }
 
-    public function store(Request $request)
+   public function store(Request $request)
 {
     $request->validate([
         'title' => 'required|string|max:100',
         'description' => 'required|string',
         'location' => 'required|string|max:255',
+        'latitude' => 'required|numeric|between:-90,90',
+        'longitude' => 'required|numeric|between:-180,180',
         'price' => 'required|numeric|min:0',
         'room_count' => 'required|integer|min:1',
         'images.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:2048',
@@ -34,10 +37,10 @@ class PropertyController extends Controller
     $data = $request->all();
     $data['user_id'] = auth()->id();
 
-    // First, create the property
+    // Create property
     $property = Property::create($data);
 
-    // Then handle image uploads
+    // Handle image uploads
     if ($request->hasFile('images')) {
         foreach ($request->file('images') as $file) {
             $filename = time() . '_' . $file->getClientOriginalName();
@@ -49,7 +52,8 @@ class PropertyController extends Controller
         }
     }
 
-    return redirect()->route('landlord.properties.index')->with('success', 'Property added!');
+    return redirect()->route('landlord.properties.index')
+        ->with('success', 'Property added!');
 }
 
     public function edit(Property $property)
@@ -66,6 +70,8 @@ class PropertyController extends Controller
             'title' => 'required',
             'description' => 'required',
             'location' => 'required',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
             'price' => 'required|numeric',
             'room_count' => 'required|integer|min:1',
             'images.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:10240',
@@ -128,4 +134,12 @@ class PropertyController extends Controller
         return view('tenant.properties.show', compact('property'));
     }
 
+    public function viewMap($id)
+{
+    $properties = Property::all(); // or filter however you want
+    return view('tenant.properties.map', compact('properties'));
 }
+
+}
+
+

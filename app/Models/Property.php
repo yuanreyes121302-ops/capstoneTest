@@ -36,6 +36,8 @@ class Property extends Model
         'price',
         'room_count',
         'image',
+        'latitude',
+        'longitude',
     ];
 
     

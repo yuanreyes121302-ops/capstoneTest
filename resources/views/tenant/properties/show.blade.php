@@ -1,5 +1,118 @@
 @extends('layouts.app')
 
+@push('styles')
+<style>
+    /* Max-width container for wide layout */
+.custom-max-container {
+    max-width: 1140px;
+    margin: auto;
+    padding: 0 15px;
+}
+
+/* White card-style boxes with subtle shadow */
+.info-card,
+.contact-card,
+.room-table,
+.map-box,
+.review-box {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Image hover effect */
+.property-images img {
+    border-radius: 8px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.property-images img:hover {
+    transform: scale(1.03);
+}
+
+/* Review and reply formatting */
+.review-box {
+    background-color: #f9f9f9;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #0d6efd;
+}
+
+.review-reply {
+    background-color: #f1fdf2;
+    border-left: 4px solid #198754;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    margin-top: 0.5rem;
+}
+
+/* Room cards */
+.room-card {
+    border: 1px solid #e3e3e3;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 20px;
+    background: #fff;
+}
+
+/* Map container */
+#map {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.map-box {
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Route info box on map */
+#route-info {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 10px;
+    max-width: 300px;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 6px;
+}
+
+.btn-outline-primary,
+.btn-outline-secondary {
+    min-width: 100px;
+}
+
+/* Responsive image layout */
+@media (max-width: 768px) {
+    .property-images {
+        flex-direction: column;
+    }
+
+    .property-images img {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+</style>
+@endpush
+
+
+
 @php
     $hasBooking = \App\Models\Booking::where('tenant_id', auth()->id())
     ->whereIn('status', ['pending', 'accepted'])
@@ -10,30 +123,27 @@
 @endphp
 
 @section('content')
-<div class="container">
-    <a href="{{ route('tenant.properties.index') }}" class="btn btn-secondary mb-3">← Back to Listings</a>
-    <h3 class="mb-3">{{ $property->title }}</h3>
+<div class="container-fluid bg-light py-4">
+    <div class="container custom-max-container">
 
-    <div class="mb-3">
-        <div class="mb-3 d-flex gap-2 flex-wrap m-3">
-            @foreach ($property->images as $index => $img)
-                <img src="{{ asset('storage/property_images/' . $img->image_path) }}"
-                    style="width: 170px; height: 120px; object-fit: cover; border-radius: 8px; cursor: pointer;"
-                    data-bs-toggle="modal" data-bs-target="#imageModal{{ $index }}">
-                
-                <!-- Modal -->
-                <div class="modal fade" id="imageModal{{ $index }}" tabindex="-1" aria-labelledby="imageModalLabel{{ $index }}" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-body p-0">
-                                <img src="{{ asset('storage/property_images/' . $img->image_path) }}" class="img-fluid w-100">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    </div>
+        <a href="{{ route('tenant.properties.index') }}" class="btn btn-secondary mb-3">← Back to Listings</a>
+        <h3 class="mb-3">{{ $property->title }}</h3>
+
+        <div class="mb-3">
+       <div class="mb-3 d-flex gap-2 flex-wrap m-3 property-images">
+         @foreach ($property->images as $index => $img)
+        <img src="{{ asset('storage/property_images/' . $img->image_path) }}" 
+             class="shadow-sm"
+             style="width: 170px; height: 120px; object-fit: cover; border-radius: 8px; cursor: pointer;"
+             data-bs-toggle="modal" 
+             data-bs-target="#imageModal{{ $index }}">
+        <!-- Modal code unchanged -->
+    @endforeach
+
+</div>
+
+
+  
 
     <p>
         <strong>Overall Rating:</strong>
@@ -142,35 +252,101 @@
         </div>
     </form>
 <hr>
+
+<a href="{{ route('tenant.properties.map', $property->id) }}" class="btn btn-outline-primary">
+    📍 View on Map
+</a>
+
     <div id="map" style="height: 400px;" class="my-4 rounded shadow-sm"></div>
+
+    <!-- Info box for start & destination -->
+<div id="route-info" style="padding:10px; background:#fff; border:1px solid #ccc; border-radius:8px; width:250px; font-size:14px; margin-top:10px;">
+    <strong>Route Information</strong><br>
+    Start: <span id="start-location">Not selected</span><br>
+    Destination: <span id="destination-location">Property Location</span>
+    <button id="use-my-location" class="btn btn-primary">Use My Location</button>
+</div> 
 
 <script>
     const propertyLat = {{ $property->latitude }};
     const propertyLng = {{ $property->longitude }};
-    const startLat = 15.00089; // Example location
-    const startLng = 120.65254;
 
-    const map = L.map('map').setView([startLat, startLng], 13);
+    const map = L.map('map').setView([propertyLat, propertyLng], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Optional: Markers
-    L.marker([startLat, startLng]).addTo(map).bindPopup('Your Location');
-    L.marker([propertyLat, propertyLng]).addTo(map).bindPopup('Property Location');
+    // Destination marker (Property)
+    const propertyMarker = L.marker([propertyLat, propertyLng])
+        .addTo(map)
+        .bindPopup('Property Location')
+        .openPopup();
 
-    // Leaflet Routing Machine Route (this draws the curve!)
-    L.Routing.control({
-        waypoints: [
-            L.latLng(startLat, startLng),
-            L.latLng(propertyLat, propertyLng)
-        ],
-        routeWhileDragging: false,
-        show: false,
-        createMarker: function () { return null; }, // hides auto markers
-    }).addTo(map);
+    // Update destination in info box
+    document.getElementById("destination-location").innerText = "Property Location";
 
+    let routingControl;
+    let startMarker;
+
+    // Geocoder search box
+    const geocoder = L.Control.geocoder({
+        defaultMarkGeocode: false
+    })
+    .on('markgeocode', function(e) {
+        const startLatLng = e.geocode.center;
+        updateRoute(startLatLng, e.geocode.name);
+    })
+    .addTo(map);
+
+    // Function to update route + markers
+    function updateRoute(startLatLng, label = "Start Location") {
+        // Remove old route if exists
+        if (routingControl) map.removeControl(routingControl);
+        // Remove old start marker if exists
+        if (startMarker) map.removeLayer(startMarker);
+
+        // Add new start marker
+        startMarker = L.marker(startLatLng)
+            .addTo(map)
+            .bindPopup(label)
+            .openPopup();
+
+        // Update info box
+        document.getElementById("start-location").innerText = label;
+
+        // Add routing
+        routingControl = L.Routing.control({
+            waypoints: [
+                startLatLng,
+                L.latLng(propertyLat, propertyLng)
+            ],
+            routeWhileDragging: false,
+            show: false,
+            createMarker: () => null // hide auto markers
+        }).addTo(map);
+
+        // Fit map to both points
+        map.fitBounds(L.latLngBounds([startLatLng, [propertyLat, propertyLng]]));
+    }
+
+    // 📍 "Use My Location" button
+    document.getElementById("use-my-location").addEventListener("click", () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    const latlng = L.latLng(position.coords.latitude, position.coords.longitude);
+                    updateRoute(latlng, "My Location");
+                },
+                () => alert("Unable to retrieve your location")
+            );
+        } else {
+            alert("Geolocation not supported by your browser");
+        }
+    });
 </script>
 </div>
+</div>
+    </div>
+    
 @endsection

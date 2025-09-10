@@ -25,6 +25,26 @@
             <input type="text" name="location" class="form-control" value="{{ old('location', $property->location) }}" required>
         </div>
 
+         <!-- Latitude & Longitude -->
+        <div class="mb-3 row">
+            <div class="col-md-6">
+                <label>Latitude</label>
+                <input type="text" id="latitude" name="latitude" class="form-control" 
+                       value="{{ old('latitude', $property->latitude) }}" required readonly>
+            </div>
+            <div class="col-md-6">
+                <label>Longitude</label>
+                <input type="text" id="longitude" name="longitude" class="form-control" 
+                       value="{{ old('longitude', $property->longitude) }}" required readonly>
+            </div>
+        </div>
+
+        <!-- GPS + Map -->
+        <div class="mb-3">
+            <button type="button" class="btn btn-outline-primary mb-2" onclick="getLocation()">📍 Use GPS</button>
+            <div id="map" style="height: 300px; border-radius: 5px;"></div>
+        </div>
+
         <div class="mb-3 row">
             <div class="col-md-6">
                 <label>Price</label>
@@ -65,6 +85,43 @@
         @endforeach
     </div>
 
+<!-- Leaflet + GPS Script -->
+<script>
+    var map = L.map('map').setView([{{ $property->latitude }}, {{ $property->longitude }}], 15);
+    var marker = L.marker([{{ $property->latitude }}, {{ $property->longitude }}], {draggable:true}).addTo(map);
+
+    // Update inputs when marker is dragged
+    marker.on('dragend', function(e) {
+        var latlng = marker.getLatLng();
+        document.getElementById('latitude').value = latlng.lat;
+        document.getElementById('longitude').value = latlng.lng;
+    });
+
+    // OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+    }).addTo(map);
+
+    // GPS function
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var lat = position.coords.latitude;
+                var lng = position.coords.longitude;
+
+                map.setView([lat, lng], 15);
+                marker.setLatLng([lat, lng]);
+
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+            }, function() {
+                alert("Failed to retrieve GPS location. Please drag the pin instead.");
+            });
+        } else {
+            alert("Your browser does not support GPS.");
+        }
+    }
+</script>
 
 </div>
 @endsection

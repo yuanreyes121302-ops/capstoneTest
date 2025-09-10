@@ -1,8 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/create_room.css') }}">
+@endpush
+
 <div class="container">
-    <h4>Create Room</h4>
+    <div class="container-rooms-create">
+<h4>Create Room</h4>
     <form action="{{ route('landlord.rooms.store', $property->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
 
@@ -45,5 +51,7 @@
 
         <button type="submit" class="btn btn-success">Save</button>
     </form>
+</div> 
 </div>
+    
 @endsection
