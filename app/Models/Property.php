@@ -22,9 +22,19 @@ class Property extends Model
         return $this->hasMany(Room::class);
     }
 
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
     public function getAverageRatingAttribute()
     {
-        $allRatings = $this->rooms->flatMap->reviews->pluck('rating');
+        $allRatings = $this->reviews->pluck('rating');
         return $allRatings->count() ? round($allRatings->avg(), 1) : null;
     }
 
@@ -35,7 +45,6 @@ class Property extends Model
         'location',
         'price',
         'room_count',
-        'image',
         'latitude',
         'longitude',
     ];

@@ -25,19 +25,7 @@ class Room extends Model
         return $this->hasMany(RoomImage::class);
     }
 
-    public function reviews()
-    {
-        return $this->hasMany(Review::class);
-    }
 
-    public function getAverageRatingAttribute()
-    {
-        if ($this->reviews->count() === 0) {
-            return null;
-        }
-
-        return round($this->reviews->avg('rating'), 1); // e.g., 4.3
-    }
 
 
 }

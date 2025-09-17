@@ -121,10 +121,21 @@
                                 </a>
                             </li>
                         @elseif(Auth::user()->role === 'landlord')
+                            @php
+                                $unreadNotificationsCount = \App\Models\Notification::where('user_id', Auth::id())->where('is_read', false)->count();
+                            @endphp
+                            <li class="nav-item"><a class="nav-link text-white" href="{{ route('landlord.dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                             <li class="nav-item"><a class="nav-link text-white" href="{{ route('landlord.profile') }}"><i class="fa-regular fa-user"></i> Profile</a></li>
                             <li class="nav-item"><a class="nav-link text-white" href="{{ route('landlord.properties.index') }}"><i class="fa-solid fa-house"></i> Properties</a></li>
                             <li class="nav-item"><a class="nav-link text-white" href="{{ route('messages.index') }}"><i class="fa-solid fa-inbox"></i> Messages</a></li>
-                            <li class="nav-item"><a class="nav-link text-white" href="{{ route('bookings.landlord.index') }}"> <i class="fa-solid fa-file"></i> Requests</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{{ route('bookings.landlord.index') }}">
+                                    <i class="fa-solid fa-file"></i> Requests
+                                    @if($unreadNotificationsCount > 0)
+                                        <span class="badge bg-danger ms-1">{{ $unreadNotificationsCount }}</span>
+                                    @endif
+                                </a>
+                            </li>
                             <li class="nav-item"><a class="nav-link text-white" href="{{ route('landlord.contracts') }}"><i class="fa-solid fa-file-contract"></i> Contracts</a></li>
                         @elseif(Auth::user()->role === 'admin')
                             <li class="nav-item"><a class="nav-link text-white" href="{{ route('admin.users.all') }}">👥 Users</a></li>

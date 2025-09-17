@@ -27,3 +27,16 @@ Route::get('/bfs-route', function (Request $request) {
 
     return response()->json(['path' => $path]);
 });
+
+// Log back navigation from map view
+Route::post('/log-back-navigation', function (Request $request) {
+    \Illuminate\Support\Facades\Log::info('Back navigation from map view', [
+        'tenant_id' => $request->tenant_id,
+        'property_id' => $request->property_id,
+        'timestamp' => now()
+    ]);
+
+    return response()->json(['status' => 'logged']);
+});
+
+

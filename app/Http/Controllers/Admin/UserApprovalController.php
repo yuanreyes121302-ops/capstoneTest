@@ -59,8 +59,9 @@ class UserApprovalController extends Controller
         $landlords = User::where('is_approved', true)->where('role', 'landlord')->count();
         $tenants = User::where('is_approved', true)->where('role', 'tenant')->count();
         $total = User::where('is_approved', true)->count();
+        $pendingUsers = User::where('is_approved', false)->get();
 
-        return view('admin.all-users', compact('users', 'total', 'admins', 'landlords', 'tenants'));
+        return view('admin.all-users', compact('users', 'total', 'admins', 'landlords', 'tenants', 'pendingUsers'));
     }
 
     public function destroy(User $user)
@@ -72,6 +73,21 @@ class UserApprovalController extends Controller
 
         $user->delete();
         return back()->with('success', 'User deleted successfully.');
+    }
+
+    public function dashboard()
+    {
+        $totalUsers = User::where('is_approved', true)->count();
+        $pendingApprovals = User::where('is_approved', false)->count();
+        $activeAdmins = User::where('role', 'admin')->where('is_approved', true)->count();
+
+        return view('admin.dashboard', compact('totalUsers', 'pendingApprovals', 'activeAdmins'));
+    }
+
+    public function pendingCount()
+    {
+        $count = User::where('is_approved', false)->count();
+        return response()->json(['count' => $count]);
     }
 
 

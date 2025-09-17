@@ -34,7 +34,7 @@ class LoginController extends Controller
     if (auth()->user()->role === 'admin') {
         return '/admin/users/all';
     } elseif (auth()->user()->role === 'landlord') {
-        return '/landlord/profile';
+        return '/landlord/dashboard';
     } elseif (auth()->user()->role === 'tenant') {
         return '/tenant/profile';
     }

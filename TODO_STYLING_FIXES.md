@@ -1,37 +1,24 @@
-# UI/UX Fixes for Chat Interface and User Profiles
+# Styling Fixes TODO
 
-## 1. Message Inbox Layout Issues
-- [ ] Fix avatar and profile name alignment in inbox sidebar
-- [ ] Add online/offline status display near avatar
-- [ ] Make message input field full width and fix text area visibility
-- [ ] Ensure avatar, name, and status are visible in conversation header
+## Back Button Fixes
+- [ ] Make all back buttons white with hover effect
+- [ ] Ensure consistent "← Back" text across all pages
+- [ ] Apply to landlord pages: properties/index, properties/edit, properties/create, profile, contracts/index
+- [ ] Apply to admin pages: user-approvals, add-admin
+- [ ] Apply to tenant pages: profile, properties/show
 
-## 2. Tenant Profile Layout
-- [x] Move profile image and "choose file" button to side of text fields
-- [x] Ensure clean display with avatar, name, gender, location
-- [x] Remove unnecessary scrolling
+## Landlord Profile Page Fixes
+- [ ] Move plus (+) button to image corner
+- [ ] Remove email displayed under user's name
+- [ ] Keep profile details below profile picture
+- [ ] Ensure only profile image + name at top
 
-## 3. Landlord Profile Layout
-- [x] Remove DOB field from profile
-- [x] Add contact number field and display next to avatar
-- [x] Update profile display order: name, contact number, gender, email
+## Consistency Fixes
+- [ ] Check for any remaining arrow-only buttons
+- [ ] Ensure all flows use consistent back button style
+- [ ] Verify all changes work across landlord, admin, tenant flows
 
-## 4. Landlord Registration
-- [x] Add contact number field as required for landlords
-- [x] Update validation and creation logic
-
-## 5. Backend Adjustments
-- [x] Add contact_number column to users table
-- [x] Update User model fillable array
-- [x] Update controllers for contact number handling
-- [ ] Implement online/offline status tracking system
-
-## 6. CSS Updates
-- [x] Update messages.css for better layout
-- [x] Update tenant.css for side layout
-- [x] Update landlord.css for new fields
-
-## 7. Testing
-- [ ] Test responsiveness on mobile and desktop
-- [ ] Verify consistency across views
-- [ ] Test online/offline status functionality
+## Reminder
+- Do not change any variables
+- Maintain existing functionality
+- Focus on visual consistency and usability

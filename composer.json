@@ -1,4 +1,14 @@
+"scripts": {
+  "post-install-cmd": [
+    "php artisan key:generate --force",
+    "php artisan migrate --force"
+  ]
+    
+}
+
 {
+
+    
     "name": "laravel/laravel",
     "type": "project",
     "description": "The Laravel Framework.",
@@ -9,6 +19,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
+        "doctrine/dbal": "^3.10",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.75",
@@ -64,4 +75,11 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true
+
+    
+
+
+    
 }
+
+  

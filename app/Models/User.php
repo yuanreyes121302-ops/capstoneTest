@@ -31,6 +31,9 @@ class User extends Authenticatable
         'contact_number',
         'is_online',
         'last_seen',
+        'location',
+        'latitude',
+        'longitude',
     ];
 
     /**

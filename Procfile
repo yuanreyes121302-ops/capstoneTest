@@ -1,0 +1,1 @@
+web: E:\XAMPP\htdocs\capstone

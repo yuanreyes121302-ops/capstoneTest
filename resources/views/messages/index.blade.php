@@ -16,7 +16,12 @@
         <!-- Inbox Sidebar -->
         <div class="col-md-4 inbox-sidebar d-md-block" id="inbox-sidebar">
             <div class="p-3">
-                <h4 class="mb-3">Messages</h4>
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <a href="{{ auth()->user()->role === 'landlord' ? route('landlord.dashboard') : route('tenant.profile') }}" class="btn btn-light" style="border-radius: 8px; color: #2c3e50; background: white; border: 1px solid #e1e8ed; transition: all 0.3s ease; font-weight: 500;">
+                        ← Back
+                    </a>
+                    <h4 class="mb-0">Messages</h4>
+                </div>
                 <div id="conversations-list">
                     <!-- Conversations will be loaded here via AJAX -->
                     <div class="text-center text-white" id="loading-conversations">
