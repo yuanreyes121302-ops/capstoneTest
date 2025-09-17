@@ -18,13 +18,16 @@ RUN sed -i 's#/var/www/html#/var/www/html/public#g' /etc/apache2/sites-available
 WORKDIR /var/www/html
 
 # Copy Composer binary
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+
 
 # Copy Laravel project files
 COPY . .
 
+COPY composer.json composer.lock ./
+
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
 
 # Install Node dependencies and build assets using Laravel Mix
 RUN npm install
