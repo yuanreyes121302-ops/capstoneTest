@@ -1,12 +1,25 @@
 # Base image
 FROM php:8.2-apache
 
-# Install system dependencies
+# Install system dependencies required for PHP extensions
 RUN apt-get update && apt-get install -y \
-    git unzip zip libpng-dev libjpeg-dev libfreetype6-dev libpq-dev postgresql-client \
-    nodejs npm \
+    libonig-dev \
+    libzip-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_pgsql
+    && docker-php-ext-install pdo_mysql mbstring bcmath gd zip
+
+
+# Run entrypoint
+ENTRYPOINT ["/entrypoint.sh"]
+
+RUN docker-php-ext-install pdo_mysql mbstring bcmath gd
+ENV COMPOSER_MEMORY_LIMIT=-1
+
+
 
 # Enable Apache rewrite
 RUN a2enmod rewrite
@@ -43,19 +56,3 @@ RUN chmod +x /entrypoint.sh
 # Expose Apache port
 EXPOSE 80
 
-# Run entrypoint
-ENTRYPOINT ["/entrypoint.sh"]
-
-RUN docker-php-ext-install pdo_mysql mbstring bcmath gd
-ENV COMPOSER_MEMORY_LIMIT=-1
-
-# Install system dependencies required for PHP extensions
-RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    libonig-dev \
-    libzip-dev \
-    unzip \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql mbstring bcmath gd zip
