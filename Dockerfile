@@ -42,3 +42,5 @@ EXPOSE 80
 
 # Run entrypoint
 ENTRYPOINT ["/entrypoint.sh"]
+
+RUN docker-php-ext-install pdo_mysql mbstring bcmath gd
