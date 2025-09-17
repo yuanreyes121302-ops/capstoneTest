@@ -44,3 +44,4 @@ EXPOSE 80
 ENTRYPOINT ["/entrypoint.sh"]
 
 RUN docker-php-ext-install pdo_mysql mbstring bcmath gd
+ENV COMPOSER_MEMORY_LIMIT=-1
