@@ -49,6 +49,7 @@ ENTRYPOINT ["/entrypoint.sh"]
 RUN docker-php-ext-install pdo_mysql mbstring bcmath gd
 ENV COMPOSER_MEMORY_LIMIT=-1
 
+# Install system dependencies required for PHP extensions
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
