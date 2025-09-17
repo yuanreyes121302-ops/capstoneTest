@@ -1,3 +1,11 @@
+"scripts": {
+  "post-install-cmd": [
+    "php artisan key:generate --force",
+    "php artisan migrate --force"
+  ]
+}
+
+
 {
     "name": "laravel/laravel",
     "type": "project",
